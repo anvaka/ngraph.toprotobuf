@@ -1,0 +1,49 @@
+var schema = require('./schema.js');
+
+var makeProtoBufView = require('./lib/protobufView.js');
+
+var fs = require('fs');
+var mkdirp = require('mkdirp');
+var merge = require('ngraph.merge');
+var path = require('path');
+
+module.exports = save;
+module.exports.read = require('./readPrimitive.js');
+
+function save(graph, options) {
+  options = merge(options, {
+    outDir: '.',
+    labels: 'labels.pb',
+    meta: 'graph-def.json',
+    links: 'links.pb'
+  });
+
+  fixPaths();
+
+  var protoBufView = makeProtoBufView(graph, schema);
+
+  var linksBuffer = protoBufView.getLinksBuffer();
+  fs.writeFileSync(options.links, new Buffer(linksBuffer));
+
+  var labelsBuffer = protoBufView.getLabelsBuffer();
+  fs.writeFileSync(options.labels, new Buffer(labelsBuffer));
+
+  fs.writeFileSync(options.meta, JSON.stringify({
+    schema: schema,
+    options: options
+  }, null, 2), 'utf8');
+
+  // TODO: Save data object?
+  return;
+
+  function fixPaths() {
+    if (!fs.existsSync(options.outDir)) {
+      mkdirp.sync(options.outDir);
+    }
+
+    options.labels = path.join(options.outDir, options.labels);
+    options.meta = path.join(options.outDir, options.meta);
+    options.links = path.join(options.outDir, options.links);
+  }
+}
+

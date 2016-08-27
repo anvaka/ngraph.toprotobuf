@@ -4,7 +4,7 @@
   "description": "Stores ngraph instance into protobuf format on disk",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap test/*.js"
   },
   "keywords": [
     "ngrpah",
@@ -15,5 +15,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/anvaka/ngraph.toprotobuf"
+  },
+  "dependencies": {
+    "mkdirp": "^0.5.1",
+    "ngraph.merge": "0.0.1",
+    "protobufjs": "^5.0.1"
+  },
+  "devDependencies": {
+    "miserables": "^1.0.0",
+    "tap": "^7.0.0"
   }
 }
