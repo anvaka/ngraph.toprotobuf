@@ -32,10 +32,14 @@ function save(graph, options) {
 
   fs.writeFileSync(options.meta, JSON.stringify({
     schema: schema,
-    options: options
+    options: options,
+    stats: {
+      nodes: graph.getNodesCount(),
+      edges: graph.getLinksCount()
+    }
   }, null, 2), 'utf8');
 
-  // TODO: Save data object?
+  // TODO: Save data for each node/edge?
   return;
 
   function fixPaths() {
