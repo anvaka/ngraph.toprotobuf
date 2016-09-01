@@ -6,8 +6,6 @@ var restoreGraph = require('./lib/restoreGraph.js');
 
 module.exports = read;
 
-read('./data/graph-def.json');
-
 function read(graphDefFile) {
   var graphDefStr = fs.readFileSync(graphDefFile, 'utf8')
   var graphDef = JSON.parse(graphDefStr);
