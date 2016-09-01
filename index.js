@@ -14,7 +14,6 @@ function save(graph, options) {
   options = merge(options, {
     outDir: '.',
     labels: 'labels.pb',
-    meta: 'graph-def.json',
     links: 'links.pb'
   });
 
@@ -31,13 +30,14 @@ function save(graph, options) {
   fs.writeFileSync(options.labels, new Buffer(labelsBuffer));
 
   fs.writeFileSync(options.meta, JSON.stringify({
-    schema: schema,
     options: options,
     stats: {
       nodes: graph.getNodesCount(),
       edges: graph.getLinksCount()
     }
   }, null, 2), 'utf8');
+
+  fs.writeFileSync(options.protoFile, schema.graph);
 
   // TODO: Save data for each node/edge?
   return;
@@ -48,8 +48,9 @@ function save(graph, options) {
     }
 
     options.labels = path.join(options.outDir, options.labels);
-    options.meta = path.join(options.outDir, options.meta);
     options.links = path.join(options.outDir, options.links);
+    options.protoFile = path.join(options.outDir, 'graph.proto');
+    options.meta = path.join(options.outDir, 'graph-def.json');
   }
 }
 

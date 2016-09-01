@@ -13,7 +13,7 @@ function read(graphDefFile) {
   var labelsBuffer = readBuffer(graphDef.options.labels)
   var linksBuffer= readBuffer(graphDef.options.links)
 
-  var builder = ProtoBuf.protoFromString(graphDef.schema.graph);
+  var builder = ProtoBuf.loadProtoFile(graphDef.options.protoFile);
   var Graph = builder.build('Graph');
   var Labels = builder.build('Labels');
 
