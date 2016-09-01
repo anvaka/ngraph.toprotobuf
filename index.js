@@ -24,7 +24,7 @@ function save(graph, options) {
 
   var linksBuffer = protoBufView.getLinksBuffer();
   // Turns out node 5.1 crashes when array buffer has length 0.
-  var buffer = (linksBuffer.length > 0) ? new Buffer(linksBuffer) : new Buffer(0);
+  var buffer = (linksBuffer.byteLength > 0) ? new Buffer(linksBuffer) : new Buffer(0);
   fs.writeFileSync(options.links, buffer);
 
   var labelsBuffer = protoBufView.getLabelsBuffer();

@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "miserables": "^1.0.0",
+    "ngraph.graph": "0.0.12",
     "tap": "^7.0.0"
   }
 }

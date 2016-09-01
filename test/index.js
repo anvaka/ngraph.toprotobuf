@@ -36,6 +36,22 @@ test('it can read from disk', function(t) {
   t.end();
 });
 
+test('it can store graph without links', function(t) {
+  var graph = require('ngraph.graph')();
+  graph.addNode(1);
+  graph.addNode(2);
+
+  var outDir = 'data/isolate';
+  toProtoBuf(graph, {
+    outDir: outDir
+  });
+
+  var graphDef = path.join(__dirname, '..', outDir, 'graph-def.json');
+  var restoredGraph = readSavedGraph(graphDef);
+  verifyRestoredGraph(restoredGraph, graph, t);
+  t.end();
+});
+
 function verifyRestoredGraph(restoredGraph, srcGraph, t) {
   var nodes = restoredGraph.nodes;
   var links = restoredGraph.links;
