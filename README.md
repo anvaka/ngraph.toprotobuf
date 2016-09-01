@@ -16,6 +16,9 @@ toProtoBuf(graph, {
 });
 ```
 
+Note: This module does not oficially support reading from the protobuf, but you can 
+take a look how it could be done, by following [readPrimitive.js](https://github.com/anvaka/ngraph.toprotobuf/blob/90006966341eed5b23f1ac395a3d21992b817766/readPrimitive.js) code.
+
 # license
 
 MIT
