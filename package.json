@@ -1,6 +1,6 @@
 {
   "name": "ngraph.toprotobuf",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Stores ngraph instance into protobuf format on disk",
   "main": "index.js",
   "scripts": {
