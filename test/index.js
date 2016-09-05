@@ -2,7 +2,7 @@ var test = require('tap').test
 var path = require('path');
 
 var readSavedGraph = require('../readPrimitive.js');
-var makeProtoBufView = require('../lib/protobufView.js');
+var makeProtoBufView = require('../lib/makeProtoBufView.js');
 var createGraph = require('miserables').create;
 var schema = require('../schema.js');
 var restoreGraph = require('../lib/restoreGraph.js');

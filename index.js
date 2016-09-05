@@ -1,6 +1,6 @@
 var schema = require('./schema.js');
 
-var makeProtoBufView = require('./lib/protobufView.js');
+var makeProtoBufView = require('./lib/makeProtoBufView.js');
 
 var fs = require('fs');
 var mkdirp = require('mkdirp');
