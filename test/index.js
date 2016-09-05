@@ -34,7 +34,7 @@ test('it can read from disk without links data', function(t) {
   });
 
   var graphDef = path.join(__dirname, '..', outDir, 'graph-def.json');
-  var restoredGraph = readSavedGraph(graphDef);
+  var restoredGraph = readSavedGraph(graphDef).graph;
   var verifyLinkData = false;
   verifyRestoredGraph(restoredGraph, graph, t, verifyLinkData);
 
@@ -51,7 +51,7 @@ test('it can read from disk with links data', function(t) {
   });
 
   var graphDef = path.join(__dirname, '..', outDir, 'graph-def.json');
-  var restoredGraph = readSavedGraph(graphDef);
+  var restoredGraph = readSavedGraph(graphDef).graph;
   var verifyLinkData = true;
 
   verifyRestoredGraph(restoredGraph, graph, t, verifyLinkData);
@@ -69,7 +69,7 @@ test('it can store graph without links', function(t) {
   });
 
   var graphDef = path.join(__dirname, '..', outDir, 'graph-def.json');
-  var restoredGraph = readSavedGraph(graphDef);
+  var restoredGraph = readSavedGraph(graphDef).graph;
   verifyRestoredGraph(restoredGraph, graph, t);
   t.end();
 });

@@ -1,7 +1,7 @@
 var fs = require('fs');
 var ProtoBuf = require('protobufjs');
 
-var toArrrayBuffer = require('./lib/toArrayBuffer.js');
+var toArrayBuffer = require('./lib/toArrayBuffer.js');
 var fromCompactArray = require('./lib/fromCompactArray.js');
 var fromLinksData = require('./lib/fromLinksData.js');
 
@@ -16,6 +16,7 @@ function read(graphDefFile) {
   }
 
   var labelsBuffer = readBuffer(options.labels)
+
   var builder = ProtoBuf.loadProtoFile(options.protoFile);
   var Labels = builder.build('Labels');
   var labels = Labels.decode(labelsBuffer).labels;
@@ -36,10 +37,13 @@ function read(graphDefFile) {
     restoredGraph = fromCompactArray(labels, links);
   }
 
-  return restoredGraph;
+  return {
+    graph: restoredGraph,
+    def: graphDef
+  };
 }
 
 function readBuffer(name) {
   var buffer = fs.readFileSync(name);
-  return toArrrayBuffer(buffer);
+  return toArrayBuffer(buffer);
 }
