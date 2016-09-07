@@ -1,5 +1,5 @@
 var makeSchema = require('./makeSchema.js');
-var makeProtoBufView = require('./lib/makeProtoBufView.js');
+var ProtoBuf = require('protobufjs');
 
 var fs = require('fs');
 var mkdirp = require('mkdirp');
@@ -9,37 +9,31 @@ var path = require('path');
 module.exports = save;
 module.exports.read = require('./readPrimitive.js');
 
-function save(graph, options) {
+function save(graphs, options) {
   options = merge(options, {
-    outDir: '.',
-    labels: 'labels.pb',
-    links: 'links.pb',
-    saveLinksData: false
+    outDir: '.'
   });
 
   fixPaths();
 
-  var schema = makeSchema(options);
-  var protoBufView = makeProtoBufView(graph, schema);
+  var schema = makeSchema();
+  var builder = ProtoBuf.protoFromString(schema);
 
-  var labelsBuffer = protoBufView.getLabelsBuffer();
-  saveArrayBuffer(options.labels, labelsBuffer);
+  var Graphs = builder.build('Graphs');
+  var Graph = builder.build('Graph');
+  var Node = builder.build('Node');
+  var Link = builder.build('Link');
 
-  if (options.saveLinksData) {
-    var linksData = protoBufView.getLinksDataBuffer();
-    saveArrayBuffer(options.linksData, linksData);
-  } else {
-    // TODO: Do I need this at all?
-    var linksBuffer = protoBufView.getLinksBuffer();
-    saveArrayBuffer(options.links, linksBuffer);
+  if (!Array.isArray(graphs)) {
+    graphs = [graphs];
   }
+
+  var graphsToStore = graphs.map(toProtoGraph);
+  writeGraphsToFile();
 
   fs.writeFileSync(options.meta, JSON.stringify({
     options: options,
-    stats: {
-      nodes: graph.getNodesCount(),
-      edges: graph.getLinksCount()
-    }
+    stats: graphsToStore.map(toStats)
   }, null, 2), 'utf8');
 
   fs.writeFileSync(options.protoFile, schema);
@@ -47,22 +41,54 @@ function save(graph, options) {
   // TODO: Save data for each node?
   return;
 
+  function toStats(g) {
+    return {
+      nodes: g.nodes.length,
+      edges: g.links.length
+    }
+  }
+
+  function writeGraphsToFile() {
+    var graphsCollection = new Graphs({graphs: graphsToStore});
+    var arrayBuffer = graphsCollection.toArrayBuffer();
+    saveArrayBuffer(options.graph, arrayBuffer);
+  }
+
   function fixPaths() {
     if (!fs.existsSync(options.outDir)) {
       mkdirp.sync(options.outDir);
     }
 
-    options.labels = path.join(options.outDir, options.labels);
-    options.links = path.join(options.outDir, options.links);
-    options.protoFile = path.join(options.outDir, 'graph.proto');
+    options.graph = path.join(options.outDir, 'graph.pb');
+    options.protoFile = path.join(options.outDir, 'graph.pb.proto');
     options.meta = path.join(options.outDir, 'graph-def.json');
+  }
 
-    if (options.saveLinksData) {
-      options.linksData = path.join(options.outDir, 'linksData.pb');
+  function toProtoGraph(graph) {
+    var nodes = [];
+    var links = [];
+    var nodeIdToIndexLookup = new Map();
+
+    graph.forEachNode(saveNode);
+    graph.forEachLink(saveLink);
+
+    return new Graph({links: links, nodes: nodes});
+
+    function saveNode(node) {
+      // TODO: build Node/Link based on properties and make it configurable
+      nodeIdToIndexLookup.set(node.id, nodes.length);
+      // todo: can this be streamed?
+      nodes.push(new Node({id: node.id.toString()}));
+    }
+
+    function saveLink(link) {
+      var from = nodeIdToIndexLookup.get(link.fromId);
+      var to = nodeIdToIndexLookup.get(link.toId);
+      var data = link.data === undefined ? 0 : link.data;
+      links.push(new Link({from: from, to: to, data: data}))
     }
   }
 }
-
 
 function saveArrayBuffer(fileName, arrayBuffer) {
   // Turns out some node versions fail if arrayBuffer has 0 length.
