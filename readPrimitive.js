@@ -1,7 +1,7 @@
 var fs = require('fs');
 var ProtoBuf = require('protobufjs');
 
-var toArrayBuffer = require('./lib/toArrayBuffer.js');
+var toJSBuffer = require('./lib/toJSBuffer.js');
 
 module.exports = read;
 
@@ -26,5 +26,5 @@ function read(graphDefFile) {
 
 function readBuffer(name) {
   var buffer = fs.readFileSync(name);
-  return toArrayBuffer(buffer);
+  return toJSBuffer(buffer);
 }
