@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var ProtoBuf = require('protobufjs');
 
 var toJSBuffer = require('./lib/toJSBuffer.js');
@@ -8,14 +9,15 @@ module.exports = read;
 function read(graphDefFile) {
   var graphDefStr = fs.readFileSync(graphDefFile, 'utf8')
   var graphDef = JSON.parse(graphDefStr);
-  var options = graphDef.options;
-  if (!options) {
-    throw new Error('Graph definition file is not valid. Options are missing');
-  }
 
-  var builder = ProtoBuf.loadProtoFile(options.protoFile);
+  var dirName = path.dirname(graphDefFile);
+  var protoFile = path.join(dirName, 'graph.pb.proto')
+  var builder = ProtoBuf.loadProtoFile(protoFile);
+
   var Graphs = builder.build('Graphs');
-  var graphBuffer = readBuffer(options.graph)
+
+  var graph = path.join(dirName, 'graph.pb')
+  var graphBuffer = readBuffer(graph)
   var restoredGraphs = Graphs.decode(graphBuffer).graphs;
 
   return {

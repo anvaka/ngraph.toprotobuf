@@ -31,12 +31,12 @@ function save(graphs, options) {
   var graphsToStore = graphs.map(toProtoGraph);
   writeGraphsToFile();
 
-  fs.writeFileSync(options.meta, JSON.stringify({
+  fs.writeFileSync(fileName('graph-def.json'), JSON.stringify({
     options: options,
     stats: graphsToStore.map(toStats)
   }, null, 2), 'utf8');
 
-  fs.writeFileSync(options.protoFile, schema);
+  fs.writeFileSync(fileName('graph.pb.proto'), schema);
 
   // TODO: Save data for each node?
   return;
@@ -51,17 +51,17 @@ function save(graphs, options) {
   function writeGraphsToFile() {
     var graphsCollection = new Graphs({graphs: graphsToStore});
     var arrayBuffer = graphsCollection.toArrayBuffer();
-    saveArrayBuffer(options.graph, arrayBuffer);
+    saveArrayBuffer(fileName('graph.pb'), arrayBuffer);
+  }
+
+  function fileName(localName) {
+    return path.join(options.outDir, localName);
   }
 
   function fixPaths() {
     if (!fs.existsSync(options.outDir)) {
       mkdirp.sync(options.outDir);
     }
-
-    options.graph = path.join(options.outDir, 'graph.pb');
-    options.protoFile = path.join(options.outDir, 'graph.pb.proto');
-    options.meta = path.join(options.outDir, 'graph-def.json');
   }
 
   function toProtoGraph(graph) {
